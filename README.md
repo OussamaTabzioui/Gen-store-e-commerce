@@ -26,7 +26,7 @@ Gen-Store is a dynamic and responsive e-commerce web application built with HTML
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/Auskile/Gen-store-e-commerce.git
+   git clone https://github.com/OussamaTabzioui/Gen-store-e-commerce.git
    ```
 
 2. **Set up the database**:
