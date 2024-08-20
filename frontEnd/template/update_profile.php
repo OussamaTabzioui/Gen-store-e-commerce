@@ -1,90 +1,98 @@
 <?php
+// Include necessary files and start the session
 include 'php/user.php';
-// Check if the user is logged in
+
+// Check if the user is logged in, redirect to login if not
 if (!isset($_SESSION['username'])) {
     header("Location: php/login.php");
     exit();
 }
 
+// Retrieve user ID from session
 $user_id = $_SESSION['user_id'];
 
-// Database connection
+// Database connection parameters
 $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "Genstore";
 
+// Create a new database connection
 $conn = new mysqli($servername, $username, $password, $dbname);
 
+// Check the connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $updates = [];
     $types = "";
     $params = [];
 
-    // Check each field and add to updates if it's set and not empty
+    // Update username if provided
     if (!empty($_POST['username'])) {
         $updates[] = "username = ?";
         $types .= "s";
         $params[] = $_POST['username'];
     }
 
+    // Update email if provided
     if (!empty($_POST['email'])) {
         $updates[] = "email = ?";
         $types .= "s";
         $params[] = $_POST['email'];
     }
 
+    // Update password if provided, hash it securely
     if (!empty($_POST['password'])) {
         $updates[] = "password = ?";
         $types .= "s";
-        $params[] = password_hash($_POST['password'], PASSWORD_DEFAULT);  // Secure password hashing
+        $params[] = password_hash($_POST['password'], PASSWORD_DEFAULT);
     }
 
+    // Update address if provided
     if (!empty($_POST['address'])) {
         $updates[] = "address = ?";
         $types .= "s";
         $params[] = $_POST['address'];
     }
 
+    // Update phone if provided
     if (!empty($_POST['phone'])) {
         $updates[] = "phone = ?";
         $types .= "s";
         $params[] = $_POST['phone'];
     }
 
-    // Handle profile picture upload
+    // Handle profile picture upload if provided
     if (!empty($_FILES['profile_pic']['name'])) {
         $target_dir = "assets/img/author/";
         $target_file = $target_dir . basename($_FILES["profile_pic"]["name"]);
         $uploadOk = 1;
         $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
-        // Check if image file is actual image or fake image
+        // Validate the image file
         $check = getimagesize($_FILES["profile_pic"]["tmp_name"]);
-        if ($check !== false) {
-            $uploadOk = 1;
-        } else {
+        if ($check === false) {
             echo "File is not an image.";
             $uploadOk = 0;
         }
 
-        // Check file size
+        // Check file size limit (500KB)
         if ($_FILES["profile_pic"]["size"] > 500000) {
             echo "Sorry, your file is too large.";
             $uploadOk = 0;
         }
 
-        // Allow certain file formats
-        if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
+        // Allow only specific image formats
+        if (!in_array($imageFileType, ['jpg', 'png', 'jpeg', 'gif'])) {
             echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
             $uploadOk = 0;
         }
 
-        // If everything is ok, try to upload file
+        // Attempt to upload the image file
         if ($uploadOk == 1) {
             if (move_uploaded_file($_FILES["profile_pic"]["tmp_name"], $target_file)) {
                 $updates[] = "profile_pic = ?";
@@ -96,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // Update users table
+    // If there are updates, prepare the SQL statement
     if (!empty($updates)) {
         $sql = "UPDATE users SET " . implode(", ", $updates) . " WHERE id_user = ?";
         $types .= "i";
@@ -108,6 +116,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             die("Error preparing statement: " . $conn->error);
         }
 
+        // Bind parameters and execute the update
         $stmt->bind_param($types, ...$params);
 
         if ($stmt->execute()) {
@@ -121,28 +130,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "No updates to make.";
     }
 
-    // If user is a seller, update seller table
-    if (isUserSeller($username)) {
+    // If the user is a seller, update seller-specific information
+    if (isUserSeller($_SESSION['username'])) {
         $sellerUpdates = [];
         $sellerTypes = "";
         $sellerParams = [];
 
+        // Update CNI if provided
         if (isset($_POST['cni'])) {
             $sellerUpdates[] = "cni = ?";
             $sellerTypes .= "s";
             $sellerParams[] = $_POST['cni'];
         }
 
+        // Update bio if provided
         if (isset($_POST['bio'])) {
             $sellerUpdates[] = "bio = ?";
             $sellerTypes .= "s";
             $sellerParams[] = $_POST['bio'];
         }
 
+        // If there are seller updates, prepare the SQL statement
         if (!empty($sellerUpdates)) {
             $sellerSql = "UPDATE seller SET " . implode(", ", $sellerUpdates) . " WHERE username = ?";
             $sellerTypes .= "s";
-            $sellerParams[] = $username;
+            $sellerParams[] = $_SESSION['username'];
 
             $sellerStmt = $conn->prepare($sellerSql);
 
@@ -150,6 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 die("Error preparing seller statement: " . $conn->error);
             }
 
+            // Bind parameters and execute the update
             $sellerStmt->bind_param($sellerTypes, ...$sellerParams);
 
             if ($sellerStmt->execute()) {
@@ -157,20 +170,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } else {
                 echo "Error updating seller profile: " . $sellerStmt->error;
             }
-            $            $sellerStmt->close();
+
+            $sellerStmt->close();
         } else {
             echo "No seller updates to make.";
         }
     }
 }
 
-$conn->close();
-header("Location: my-account-page.php"); // Redirect after processing
-exit();
-?>
-
-
+// Close the database connection
 $conn->close();
 
+// Redirect to the account page after processing
 header("Location: my-account-page.php");
 exit();
+?>

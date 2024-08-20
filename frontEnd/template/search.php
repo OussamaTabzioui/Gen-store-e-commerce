@@ -1,65 +1,70 @@
 <?php
-include 'php/user.php'; // Include database connection
+// Include database connection
+include 'php/user.php';
 
-// Get search query and category
+// Retrieve search query and category from GET parameters
 $query = isset($_GET['query']) ? $_GET['query'] : '';
 $category = isset($_GET['category']) ? $_GET['category'] : '';
+
+// Define the number of results per page
 $resultsPerPage = 20;
-// Get the current page number from the query parameter, default to 1 if not set
+
+// Get the current page number from the query parameter; default to 1 if not set
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
-// Calculate the offset
+// Calculate the offset for the SQL query based on the current page
 $offset = ($page - 1) * $resultsPerPage;
-// Prepare the SQL query with filters
+
+// Prepare the base SQL query to fetch products with search filters
 $sql = "SELECT p.*, c.name as category_name
         FROM products p
         JOIN category c ON p.id_c = c.id_c
         WHERE p.name LIKE :query";
 
+// Prepare the base SQL query to count total results with the same filters
 $countSql = "SELECT COUNT(*) as total
              FROM products p
              JOIN category c ON p.id_c = c.id_c
              WHERE p.name LIKE :query";
 
+// Append category filter to SQL queries if a category is selected
 if (!empty($category)) {
     $sql .= " AND c.name = :category";
     $countSql .= " AND c.name = :category";
 }
 
 try {
-    // Prepare and execute the count query
+    // Prepare and execute the count query to get the total number of results
     $countStmt = $pdo->prepare($countSql);
     $countStmt->bindValue(':query', '%' . $query . '%');
     if (!empty($category)) {
         $countStmt->bindValue(':category', $category);
     }
     $countStmt->execute();
-    $totalCount = $countStmt->fetchColumn();
+    $totalCount = $countStmt->fetchColumn(); // Get the total count of matching products
 
-    // Prepare and execute the product query
+    // Prepare the main query to fetch products with the applied filters
     $sql .= " ORDER BY p.sells DESC, p.stock ASC
-              LIMIT 20"; // Adjust limit if needed
+              LIMIT :limit OFFSET :offset"; // Order by sells and stock, apply pagination
 
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':query', '%' . $query . '%');
     if (!empty($category)) {
         $stmt->bindValue(':category', $category);
     }
+    $stmt->bindValue(':limit', $resultsPerPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
     $stmt->execute();
-    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $products = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch the matching products
 } catch (PDOException $e) {
+    // Handle and display any database errors
     echo "Error: " . $e->getMessage();
 }
 
-// Calculate pagination variables
-// $stmt = $pdo->query("SELECT COUNT(*) FROM products where id_c = :category");
-// $stmt->bindValue(':category', $category);
-$stmt = $pdo->query("SELECT COUNT(*) FROM products");
-$total_products = $stmt->fetchColumn();
-$resultsPerPage = 20;
-
+// Calculate the total number of pages based on the total count of results
 $totalPages = ceil($totalCount / $resultsPerPage);
 ?>
+
 
 
 <!doctype html>

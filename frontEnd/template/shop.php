@@ -200,7 +200,7 @@ $total_pages = ceil($total_products / $products_per_page);
                                                         <button type="button" class="cart-btn d-flex mb-10 align-items-center justify-content-center w-100">
                                                             Add to Cart
                                                         </button>
-                                                        
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -250,7 +250,5 @@ $total_pages = ceil($total_products / $products_per_page);
     <!-- JS here -->
 
 </body>
-
-<!-- Mirrored from wphix.com/template/Gen-store/Gen-store/shop.php by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 25 Jul 2024 10:39:58 GMT -->
 
 </html>

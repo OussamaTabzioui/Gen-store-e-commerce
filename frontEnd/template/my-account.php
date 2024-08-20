@@ -31,16 +31,7 @@
       <link rel="stylesheet" href="assets/css/style.css">
    </head>
    <body>
-      <!--[if lte IE 9]>
-      <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
-      <![endif]-->
 
-
-    <!-- preloader start -->
-
-    <!-- preloader end -->
-
-      <!-- back to top start -->
       <div class="progress-wrap">
          <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
             <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" />
@@ -201,7 +192,7 @@
     </main>
 
     <!-- footer-start -->
-   
+
 
 
 
@@ -209,5 +200,4 @@
 
    </body>
 
-<!-- Mirrored from wphix.com/template/Gen-store/Gen-store/my-account.php by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 25 Jul 2024 10:39:43 GMT -->
 </html>

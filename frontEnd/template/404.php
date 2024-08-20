@@ -1,7 +1,7 @@
 <!doctype html>
 <html class="no-js" lang="zxx">
 
-<!-- Mirrored from wphix.com/template/Gen-store/Gen-store/404.php by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 25 Jul 2024 10:40:20 GMT -->
+
 <head>
       <meta charset="utf-8">
       <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -151,5 +151,5 @@
 
    </body>
 
-<!-- Mirrored from wphix.com/template/Gen-store/Gen-store/404.php by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 25 Jul 2024 10:40:20 GMT -->
+
 </html>

@@ -263,7 +263,4 @@ $conn->close();
     </script>
     <?php include 'php/footer.php' ?>
 </body>
-
-<!-- Mirrored from wphix.com/template/Gen-store/Gen-store/my-account.php by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 25 Jul 2024 10:39:43 GMT -->
-
 </html>

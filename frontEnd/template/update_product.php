@@ -1,24 +1,29 @@
 <?php
 // edit_product.php
-require 'php/user.php'; // Include your database connection file
 
+require 'php/user.php'; // Include the database connection file
+
+// Check if a product ID is provided in the URL
 if (isset($_GET['id'])) {
-    $product_id = intval($_GET['id']);
+    $product_id = intval($_GET['id']); // Convert the ID to an integer for security
 
-    // Fetch product details from the database
+    // Fetch the product details from the database
     $stmt = $pdo->prepare('SELECT * FROM products WHERE id_p = ?');
     $stmt->execute([$product_id]);
-    $product = $stmt->fetch();
+    $product = $stmt->fetch(); // Retrieve the product details
 
+    // If the product is not found, display an error and terminate the script
     if (!$product) {
         die('Product not found.');
     }
 } else {
+    // If no product ID is provided, display an error and terminate the script
     die('No product ID provided.');
 }
 
+// Handle the form submission to update the product
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Handle form submission for updating the product
+    // Retrieve the form data
     $name = $_POST['name'];
     $description = $_POST['description'];
     $category = $_POST['category'];
@@ -26,17 +31,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $discount = $_POST['discount'];
     $stock = $_POST['stock'];
 
-    // Handle file uploads
+    // Handle file uploads (images)
     $image1 = $_FILES['image1']['name'];
     $image2 = $_FILES['image2']['name'];
     $image3 = $_FILES['image3']['name'];
 
-    // Update product in the database
+    // Prepare the SQL statement to update the product in the database
     $sql = 'UPDATE products SET name = ?, description = ?, id_c = ?, price = ?, discount = ?, stock = ?, image_url1 = ?, image_url2 = ?, image_url3 = ? WHERE id_p = ?';
     $stmt = $pdo->prepare($sql);
+
+    // Execute the statement with the provided data
     $stmt->execute([$name, $description, $category, $price, $discount, $stock, $image1, $image2, $image3, $product_id]);
 
+    // Redirect to the product details page after the update
     header('Location: product-details.php?id=' . $product_id);
+    exit(); // Ensure no further code is executed after the redirect
 }
 ?>
 
