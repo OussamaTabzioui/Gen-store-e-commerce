@@ -13,12 +13,12 @@ Gen-Store is a dynamic and responsive e-commerce web application built with HTML
 
 ## Technologies Used
 
-- **Frontend**: 
+- **Frontend**:
   - HTML
   - CSS
   - JavaScript
 
-- **Backend**: 
+- **Backend**:
   - PHP
   - MySQL
 
@@ -32,7 +32,7 @@ Gen-Store is a dynamic and responsive e-commerce web application built with HTML
 2. **Set up the database**:
    - Create a MySQL database named `gen_store`.
    - Import the SQL file provided in the `database` directory to set up the necessary tables.
-   - create tables from file sql_creator.php
+   - create tables from file (frontEnd/template/php/sql_creator.php)
 
 3. **Configure the application**:
    - Update the `config.php` file with your database credentials.
@@ -56,5 +56,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Contact
 
 For any questions or feedback, please reach out at [OussamaTabzioui09@gmail.com].
-
-
